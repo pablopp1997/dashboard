@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperaturas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    
+    <div class="container_table_temp">
+        <table class="_table">
+            <thead>
+            <tr>
+                <th>Tiempo</th>
+                <th>Temperatura</th>
+                <th width="50px">
+                <div class="action_container">
+                    <button class="success" onclick="create_tr('table_temperature')">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+                </th>
+            </tr>
+            </thead>
+            <tbody id="table_temperature">
+            <tr>
+                <td>
+                <input name="minutos" type="text" class="form_control" placeholder="00:00" value = "00:01">
+                </td>
+                <td>
+                <input name="temperatura" type="text" class="form_control" placeholder="0" value = "0">
+                </td>
+                <td>
+                <div class="action_container">
+                    <button class="danger" onclick="remove_tr(this)">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <input type="text" id="numRows" placeholder="Numero de lineas" />
+    <button id="btnAddRows" class="warning" onclick="create_tr_mul('table_temperature', document.getElementById('numRows').value)">
+        Cargar
+        <i class="fa fa-plus"></i>
+    </button>
+    
+   
+    <script src="app.js"></script>
+    
+
+    <button id="change-chart">Change to Classic</button>
+    <button id="change-btn">Reload</button>
+    
+    <br><br>
+    <div id="chart_div" class="container_graph_temp"></div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {'packages':['line', 'corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        var data;
+
+        var button = document.getElementById('change-chart');
+        var chartDiv = document.getElementById('chart_div');
+
+        var materialOptions = {
+            chart: {
+            title: 'Temperatura al largo de la serie de tiempo'
+            },
+            width: 900,
+            height: 500,
+            series: {
+            // Gives each series an axis name that matches the Y-axis below.
+            0: {axis: 'Temps'}
+            },
+            axes: {
+            // Adds labels to each axis; they don't have to match the axis names.
+            y: {
+                Temps: {label: 'Temps (Celsius)'}
+            }
+            }
+        };
+
+        var classicOptions = {
+            title: 'Average Temperatures and Daylight in Iceland Throughout the Year',
+            width: 900,
+            height: 500,
+            // Gives each series an axis that matches the vAxes number below.
+            series: {
+            0: {targetAxisIndex: 0}
+            },
+            vAxes: {
+            // Adds titles to each axis.
+            0: {title: 'Temps (Celsius)'}
+            },
+            hAxis: {
+            ticks: []
+            },
+            vAxis: {
+            viewWindow: {
+                max: 30
+            }
+            }
+        };
+
+        function drawMaterialChart() {
+            var materialChart = new google.charts.Line(chartDiv);
+            materialChart.draw(data, materialOptions);
+            button.innerText = 'Change to Classic';
+            button.onclick = drawClassicChart;
+        }
+
+        function drawClassicChart() {
+            var classicChart = new google.visualization.LineChart(chartDiv);
+            classicChart.draw(data, classicOptions);
+            button.innerText = 'Change to Material';
+            button.onclick = drawMaterialChart;
+        }
+
+        function drawChart() {
+
+
+            data = new google.visualization.DataTable();
+            data.addColumn('number', 'Minutos');
+            data.addColumn('number', "Temperatura")
+
+            data.addRows([
+                [0,  -.5],
+                [1,   .4],
+                [2,   .5],
+                [3,  2.9,],
+                [4,  6.3,],
+                [5,    9]
+            ]);
+
+            drawMaterialChart();
+
+        }
+
+        var columnChart, tableChart;
+        document.getElementById('change-btn').onclick=function() {
+            data = new google.visualization.DataTable();
+            data.addColumn('number', 'Minutos');
+            data.addColumn('number', "Temperatura")
+            
+
+            var tabla_minutos = document.getElementsByName("minutos");
+            var tabla_temperaturas = document.getElementsByName("temperatura");
+            var minutos = 1;
+            tabla_temperaturas.forEach(x=>{
+                data.addRows([
+                    [minutos,  Number(x.value)]
+                ]);
+                minutos++;
+            });
+            drawMaterialChart();
+        }
+    </script>
+    
+   
+</body>
+</html>
